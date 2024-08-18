@@ -171,7 +171,7 @@ args = parser.parse_args()
 def main(p=2, margin=1, distribution_type='randn'):
 
     init_method = 'noise_decoupling'  # choices=[ 'random_image','wo_decoupling', 'noise_decoupling']
-    args.update_centroids = 'wo_update'  # choices=[ 'wo_update','feature_based', 'learning_based']
+    args.update_centroids = 'learning_based'  # choices=[ 'wo_update','feature_based', 'learning_based']
 
     if args.data_type == 'mvtec':
         args.data_path = "datasets/MVTec_AD"
@@ -263,12 +263,6 @@ def main(p=2, margin=1, distribution_type='randn'):
                                 lr=args.base_lr,
                                 weight_decay=args.wd,
                                 amsgrad=True)
-        warmup_lr_schedule = np.linspace(0, args.base_lr,
-                                         len(train_loader) * 10)
-        iters = np.arange(len(train_loader) * (args.epochs - 10))
-        cosine_lr_schedule = np.array([args.final_lr + 0.5 * (args.base_lr - args.final_lr) * (1 + \
-                            math.cos(math.pi * t / (len(train_loader) * (args.epochs - args.warmup_epochs)))) for t in iters])
-        lr_schedule = np.concatenate((warmup_lr_schedule, cosine_lr_schedule))
         logger.info("Building optimizer done.")
 
         # ============= start train ... =============
@@ -331,29 +325,29 @@ def main(p=2, margin=1, distribution_type='randn'):
             if (epoch +
                     1) % args.checkpoint_freq == 0 or epoch == args.epochs - 1:
                 logger.info(f'save epoch - {epoch} ckpts.')
-                save_dict = {
-                    "epoch": epoch + 1,
-                    'best_image_aucroc': best_image_auroc,
-                    "state_dict": cad.state_dict()
-                }
-                torch.save(
-                    save_dict,
-                    os.path.join(args.dump_path, f"ckpt-{epoch+1}.pth.tar"),
-                )
+                # save_dict = {
+                #     "epoch": epoch + 1,
+                #     'best_image_aucroc': best_image_auroc,
+                #     "state_dict": cad.state_dict()
+                # }
+                # torch.save(
+                #     save_dict,
+                #     os.path.join(args.dump_path, f"ckpt-{epoch+1}.pth.tar"),
+                # )
 
             if best_image_auroc < cad.best_img_roc:
                 best_image_auroc = cad.best_img_roc
                 logger.info(
                     f'best_image_aucroc {best_image_auroc} has been found.')
-                save_dict = {
-                    "epoch": epoch + 1,
-                    'best_image_aucroc': best_image_auroc,
-                    "state_dict": cad.state_dict()
-                }
-                torch.save(
-                    save_dict,
-                    os.path.join(args.dump_path, "best_image_aucroc.pth.tar"),
-                )
+                # save_dict = {
+                #     "epoch": epoch + 1,
+                #     'best_image_aucroc': best_image_auroc,
+                #     "state_dict": cad.state_dict()
+                # }
+                # torch.save(
+                #     save_dict,
+                #     os.path.join(args.dump_path, "best_image_aucroc.pth.tar"),
+                # )
 
 
 def detection(test_loader, encoder, cad):
@@ -398,4 +392,4 @@ def detection(test_loader, encoder, cad):
 
 if __name__ == '__main__':
 
-    main()
+    main(margin=0.1)

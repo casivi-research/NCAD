@@ -1,8 +1,8 @@
 from datasets.mvtec import MVTecDataset
 from datasets.mpdd import MPDD_Dataset
 from datasets.visa import VisADataset
-from datasets.btad import BTADDataset
-from datasets.mvtec_loco import MVTec_LOCO_Dataset
+# from datasets.btad import BTADDataset
+# from datasets.mvtec_loco import MVTec_LOCO_Dataset
 from datasets.cifar10 import CIFAR10_Dataset
 from datasets.cifar100 import CIFAR100_Dataset
 from datasets.mnist import MNIST_Dataset
